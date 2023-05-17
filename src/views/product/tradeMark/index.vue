@@ -191,7 +191,7 @@ export default {
     updataTradeMark(row) {
       //显示对话框
       this.dialogFormVisible = true;
-      //将已有的品牌信息赋值给tradeMarkForm进行展示
+      //将已有的品牌信息赋值给tradeMarkForm进行展示（不完全深拷贝）
       this.tradeMarkForm = { ...row };
     },
     //上传图片相关的回调

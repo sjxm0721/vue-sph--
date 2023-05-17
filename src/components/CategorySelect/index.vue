@@ -3,15 +3,15 @@
     <!-- inline代表行内表单（一行可以放置多个表单元素） -->
     <el-form :inline="true" class="demo-form-inline" :model="cForm">
       <el-form-item label="一级分类">
-        <el-select placeholder="请选择" v-model="cForm.category1Id" @change="handler1">
+        <el-select placeholder="请选择" v-model="cForm.category1Id" @change="handler1" :disabled="show">
           <el-option :label="category1.name" :value="category1.id" v-for="(category1,index) in list1" :key="category1.id"></el-option>
         </el-select> </el-form-item
       ><el-form-item label="二级分类">
-        <el-select placeholder="请选择" v-model="cForm.category2Id" @change="handler2">
+        <el-select placeholder="请选择" v-model="cForm.category2Id" @change="handler2" :disabled="show">
           <el-option :label="category2.name" :value="category2.id" v-for="(category2,index) in list2" :key="category2.id"></el-option>
         </el-select> </el-form-item
       ><el-form-item label="三级分类">
-        <el-select placeholder="请选择" v-model="cForm.category3Id" @change="handler3" >
+        <el-select placeholder="请选择" v-model="cForm.category3Id" @change="handler3" :disabled="show">
           <el-option :label="category3.name" :value="category3.id" v-for="(category3,index) in list3" :key="category3.id" ></el-option>
         </el-select>
       </el-form-item>
@@ -42,6 +42,7 @@ export default {
     //获取一级分类的方法
     this.getCategory1List();
   },
+  props:['show'],
   methods: {
     async getCategory1List(){
       //获取一级分类的请求

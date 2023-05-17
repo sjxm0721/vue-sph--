@@ -34,6 +34,6 @@ export const reqAttrList=(category1Id,category2Id,category3Id)=>{
 
 //添加属性与属性值的接口
 //  /admin/product/saveAttrInfo   post
-export const reqAddAttr=(data)=>{
+export const reqAddOrUpdateAttr=(data)=>{
     return request({url:'/admin/product/saveAttrInfo',method:'post',data});
 }

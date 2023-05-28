@@ -1,3 +1,4 @@
+<!-- dashboard首页组件 先不用修改 -->
 <template>
   <div class="dashboard-container">
     <div class="dashboard-text">name: {{ name }}</div>

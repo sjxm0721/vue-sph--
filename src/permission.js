@@ -1,3 +1,5 @@
+// 登录权限管理 进度条加载  暂时不改 
+
 import router from './router'
 import store from './store'
 import { Message } from 'element-ui'
@@ -8,6 +10,7 @@ import getPageTitle from '@/utils/get-page-title'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
+//白名单 不需要进行登录验证
 const whiteList = ['/login'] // no redirect whitelist
 
 router.beforeEach(async(to, from, next) => {

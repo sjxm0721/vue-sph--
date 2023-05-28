@@ -1,18 +1,41 @@
+<!-- 种类选择标签的全局组件 -->
 <template>
   <div>
     <!-- inline代表行内表单（一行可以放置多个表单元素） -->
-    <el-form :inline="true" class="demo-form-inline" :model="cForm">
-      <el-form-item label="一级分类">
-        <el-select placeholder="请选择" v-model="cForm.category1Id" @change="handler1" :disabled="show">
-          <el-option :label="category1.name" :value="category1.id" v-for="(category1,index) in list1" :key="category1.id"></el-option>
+    <el-form
+      :inline="true"
+      class="demo-form-inline"
+      :model="cForm"
+      size="medium"
+    >
+      <el-form-item label="一级分类" style="margin-right: 50px">
+        <el-select
+          placeholder="请选择"
+          v-model="cForm.fatherAttrId"
+          @change="handler1"
+          :disabled="!show"
+        >
+          <el-option
+            :label="fatherAttr.fieldValue"
+            :value="fatherAttr.fieldId"
+            v-for="(fatherAttr, index) in fatherAttrData"
+            :key="fatherAttr.fieldId"
+          ></el-option>
         </el-select> </el-form-item
-      ><el-form-item label="二级分类">
-        <el-select placeholder="请选择" v-model="cForm.category2Id" @change="handler2" :disabled="show">
-          <el-option :label="category2.name" :value="category2.id" v-for="(category2,index) in list2" :key="category2.id"></el-option>
-        </el-select> </el-form-item
-      ><el-form-item label="三级分类">
-        <el-select placeholder="请选择" v-model="cForm.category3Id" @change="handler3" :disabled="show">
-          <el-option :label="category3.name" :value="category3.id" v-for="(category3,index) in list3" :key="category3.id" ></el-option>
+      >
+      <el-form-item label="二级分类">
+        <el-select
+          placeholder="请选择"
+          v-model="cForm.childrenAttrId"
+          @change="handler2"
+          :disabled="!cForm.fatherAttrId||!show"
+        >
+          <el-option
+            :label="childrenAttr.value"
+            :value="childrenAttr.id"
+            v-for="(childrenAttr, index) in childrenAttrData"
+            :key="childrenAttr.id"
+          ></el-option>
         </el-select>
       </el-form-item>
     </el-form>
@@ -25,68 +48,85 @@ export default {
   data() {
     return {
       //一级分类的数据
-      list1:[],
+      fatherAttrData:[],
       //二级分类的数据
-      list2:[],
-      //三级分类的数据
-      list3:[],
+      levelAttrData:{},
+      organizationAttrData:{},
+      categoryAttrData:{},
       //选择的一级、二级、三级分类的id
-      cForm:{
-        category1Id:'',
-        category2Id:'',
-        category3Id:'',
+      cForm: {
+        fatherAttrId: "",
+        childrenAttrId: "",
+      },
+      show:true, //控制cs的显示与隐藏
+    };
+  },
+  computed:{
+    childrenAttrData(){
+      if(this.cForm.fatherAttrId==1){
+        return this.organizationAttrData['childrenValue'];
+      }
+      else if(this.cForm.fatherAttrId==2){
+        return this.levelAttrData['childrenValue'];
+      }
+      else{
+        return this.categoryAttrData['childrenValue']
       }
     }
   },
-  mounted(){
-    //获取一级分类的方法
-    this.getCategory1List();
+  mounted() {
+    this.show=true;
+    this.$bus.$on("changeCsShow",(show)=>{
+          this.show=show;
+        });
+    this.$bus.$on("changeChildrenAttr",(childrenAttrId)=>{
+      this.cForm.childrenAttrId=childrenAttrId;
+    })
   },
-  props:['show'],
+  beforeDestroy(){
+        this.$bus.$off("changeCsShow");
+        this.$bus.$off("changeChildrenAttr");
+  },
   methods: {
-    async getCategory1List(){
-      //获取一级分类的请求
-      let result=await this.$API.attr.reqCategory1List();
-      if(result.code==200){
-        this.list1=result.data;
-      }
-    },
-    //一级分类事件回调
-    async handler1(){
+    handler1() {
       //清除数据
-      this.list2=[];
-      this.list3=[];
-      this.cForm.category2Id='';
-      this.cForm.category3Id='';
-      //当一级分类的内容发生变化时获取相应二级分类的数据
-      //解构出一级分类的Id
-      const {category1Id}=this.cForm;
-      this.$emit('getCategoryId',{categoryId:category1Id,level:1});
-     let result = await this.$API.attr.reqCategory2List(category1Id);
-     if(result.code==200){
-      this.list2=result.data;
-     }
+      this.cForm.childrenAttrId = "";
+      //进入场景1
+      this.$emit('changeScene',1);
     },
+   
     //二级分类事件回调
-    async handler2(){
-      //清除数据
-      this.list3=[];
-      this.cForm.category3Id='';
-      //当二级分类的内容发生变化时获取相应三级分类的数据
-      //解构出二级分类的Id
-      const {category2Id}=this.cForm;
-      this.$emit('getCategoryId',{categoryId:category2Id,level:2});
-     let result = await this.$API.attr.reqCategory3List(category2Id);
-     if(result.code==200){
-      this.list3=result.data;
-     }
+    handler2() {
+      //给Scene2提供数据
+      //进入场景2
+      this.$emit("changeScene", 2);
     },
-    handler3(){
-      const {category3Id}=this.cForm;
-      this.$emit('getCategoryId',{categoryId:category3Id,level:3});
 
+    getFatherAttr(fatherAttrData){
+      this.fatherAttrData=fatherAttrData;
+    },
+
+    getChildrenAttr(levelAttrData,categoryAttrData,organizationAttrData){
+      this.levelAttrData=levelAttrData;
+      this.categoryAttrData=categoryAttrData;
+      this.organizationAttrData=organizationAttrData
     }
   },
+  watch:{
+    childrenAttrData:{
+        handler(newValue,oldValue){
+          this.$bus.$emit("getChildrenAttr",newValue,this.cForm.fatherAttrId);
+        },
+        immediate:true,
+    },
+    'cForm.childrenAttrId':{
+      deep:true,
+      immediate:true,
+      handler(newValue,oldValue){
+      this.$bus.$emit('getAttrInfo',this.cForm.fatherAttrId,this.cForm.childrenAttrId);
+      }
+    }
+  }
 };
 </script>
-<style></style>
+<style scoped></style>

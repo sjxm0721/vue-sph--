@@ -1,3 +1,4 @@
+<!-- page 404 展示页面  不用修改 -->
 <template>
   <div class="wscn-http404-container">
     <div class="wscn-http404">

@@ -1,3 +1,4 @@
+<!-- app组件不用修改 -->
 <template>
   <div id="app">
     <router-view />

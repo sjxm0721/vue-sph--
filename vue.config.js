@@ -40,10 +40,9 @@ module.exports = {
     // before: require('./mock/mock-server.js')
     //配置代理跨域
     proxy:{
-      '/dev-api':{
-        target:'http://gmall-h5-api.atguigu.cn',
+      '/myPHP':{
+        target:'http://47.99.92.58:80/',
         changeOrigin:true,
-        pathRewrite:{'^/dev-api':''},
       },
     }
   },

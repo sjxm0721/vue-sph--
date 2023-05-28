@@ -2,12 +2,14 @@ import Vue from 'vue'
 
 import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 
+//部分引入ElementUI
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import locale from 'element-ui/lib/locale/lang/en' // lang i18n
 
 import '@/styles/index.scss' // global css
 
+//引入路由 仓库 app组件
 import App from './App'
 import store from './store'
 import router from './router'
@@ -44,6 +46,10 @@ import CategorySelect from '@/components/CategorySelect'
 Vue.component(CategorySelect.name,CategorySelect);
 new Vue({
   el: '#app',
+  //全局事件总线
+  beforeCreate(){
+    Vue.prototype.$bus=this;
+  },
   router,
   store,
   render: h => h(App)

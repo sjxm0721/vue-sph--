@@ -1,4 +1,4 @@
-import { login, logout, getInfo } from '@/api/user'
+import { login,  getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
@@ -44,9 +44,9 @@ const actions = {
     //   })
     // })
     let result=await login({username:username.trim(),password:password});
-    if(result.code==20000){
-      commit('SET_TOKEN', result.data.token);
-      setToken(result.data.token);
+    if(result.code=200){
+      commit('SET_TOKEN', result.data['token']);
+      setToken(result.data['token']);
       return 'OK';
     }
     else{
@@ -76,18 +76,18 @@ const actions = {
   },
 
   // user logout
-  logout({ commit, state }) {
-    return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
-        removeToken() // must remove  token  first
-        resetRouter()
-        commit('RESET_STATE')
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },
+  // logout({ commit, state }) {
+  //   return new Promise((resolve, reject) => {
+  //     logout(state.token).then(() => {
+  //       removeToken() // must remove  token  first
+  //       resetRouter()
+  //       commit('RESET_STATE')
+  //       resolve()
+  //     }).catch(error => {
+  //       reject(error)
+  //     })
+  //   })
+  // },
 
   // remove token
   resetToken({ commit }) {

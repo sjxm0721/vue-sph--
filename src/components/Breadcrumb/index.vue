@@ -1,3 +1,4 @@
+<!-- 面包屑的全局组件   不用修改 -->
 <template>
   <el-breadcrumb class="app-breadcrumb" separator="/">
     <transition-group name="breadcrumb">

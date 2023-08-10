@@ -43,17 +43,11 @@
 </template>
 
 <script>
+import {mapState} from 'vuex'
 export default {
   name: "CategorySelect",
   data() {
     return {
-      //一级分类的数据
-      fatherAttrData:[],
-      //二级分类的数据
-      levelAttrData:{},
-      organizationAttrData:{},
-      categoryAttrData:{},
-      //选择的一级、二级、三级分类的id
       cForm: {
         fatherAttrId: "",
         childrenAttrId: "",
@@ -62,35 +56,32 @@ export default {
     };
   },
   computed:{
-    childrenAttrData(){
-      if(this.cForm.fatherAttrId==1){
-        return this.organizationAttrData['childrenValue'];
-      }
-      else if(this.cForm.fatherAttrId==2){
-        return this.levelAttrData['childrenValue'];
-      }
-      else{
-        return this.categoryAttrData['childrenValue']
-      }
-    }
+    ...mapState("category",["fatherAttrData","childrenAttrData"]),
   },
   mounted() {
     this.show=true;
+    this.getFatherAttr();
     this.$bus.$on("changeCsShow",(show)=>{
           this.show=show;
         });
-    this.$bus.$on("changeChildrenAttr",(childrenAttrId)=>{
-      this.cForm.childrenAttrId=childrenAttrId;
-    })
+
+
+
   },
   beforeDestroy(){
         this.$bus.$off("changeCsShow");
-        this.$bus.$off("changeChildrenAttr");
   },
   methods: {
+    getFatherAttr(){
+      this.$store.dispatch('category/getFatherAttr');
+    },
+    getChildrenAttr(fatherAttrId){
+    this.$store.dispatch('category/getChildrenAttr',fatherAttrId);
+    },
     handler1() {
       //清除数据
       this.cForm.childrenAttrId = "";
+      this.getChildrenAttr(this.cForm.fatherAttrId);
       //进入场景1
       this.$emit('changeScene',1);
     },
@@ -102,22 +93,14 @@ export default {
       this.$emit("changeScene", 2);
     },
 
-    getFatherAttr(fatherAttrData){
-      this.fatherAttrData=fatherAttrData;
-    },
-
-    getChildrenAttr(levelAttrData,categoryAttrData,organizationAttrData){
-      this.levelAttrData=levelAttrData;
-      this.categoryAttrData=categoryAttrData;
-      this.organizationAttrData=organizationAttrData
-    }
   },
   watch:{
-    childrenAttrData:{
-        handler(newValue,oldValue){
-          this.$bus.$emit("getChildrenAttr",newValue,this.cForm.fatherAttrId);
-        },
+      'cForm.fatherAttrId':{
         immediate:true,
+        deep:true,
+        handler(newValue,oldValue){
+          this.$bus.$emit("getFatherAttrId",this.cForm.fatherAttrId);
+        },
     },
     'cForm.childrenAttrId':{
       deep:true,

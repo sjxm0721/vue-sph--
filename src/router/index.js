@@ -76,6 +76,27 @@ export const constantRoutes = [
     ]
   },
 
+  {
+    path:'/account',
+    component:Layout,
+    name:'Account',
+    meta:{title:'账号管理',icon:'el-icon-user'},
+    children:[
+      {
+        path:'user',
+        name:'User',
+        component:()=>import('@/views/account/user'),
+        meta:{title:'登录账号管理'},
+      },
+      {
+        path:'blackList',
+        name:'BlackList',
+        component:()=>import('@/views/account/blackList'),
+        meta:{title:'黑名单管理'},
+      },
+    ]
+  },
+
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
@@ -84,7 +105,8 @@ export const constantRoutes = [
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
+  routes: constantRoutes,
+  // mode:history
 })
 
 const router = createRouter()

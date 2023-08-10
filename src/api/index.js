@@ -2,7 +2,12 @@
 import * as category from './activity/category'
 import * as specific from './activity/specific'
 
+import * as user from './account/user'
+import * as blackList from './account/blackList'
+
 export default{
     category,
     specific,
+    user,
+    blackList
 }

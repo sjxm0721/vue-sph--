@@ -6,6 +6,8 @@ import settings from './modules/settings'
 import user from './modules/user'
 import category from './modules/category'
 import specific from './modules/specific'
+import userAccount from './modules/userAccount'
+import blackList from './modules/blackList'
 
 Vue.use(Vuex)
 
@@ -15,7 +17,9 @@ const store = new Vuex.Store({
     settings,
     user,
     category,
-    specific
+    specific,
+    userAccount,
+    blackList
   },
   getters
 })

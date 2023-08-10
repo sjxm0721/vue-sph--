@@ -20,13 +20,16 @@
   </template>
   
   <script>
+  import { mapState } from 'vuex';
   export default {
       name:'Scene0',
       data() {
         return {
         }
       },
-      props:['fatherAttrData'],
+      computed:{
+        ...mapState("category",['fatherAttrData']),
+      },
       methods:{
         addCategory(){
           this.$message({type:'warning',message:'该功能正在开发当中'});

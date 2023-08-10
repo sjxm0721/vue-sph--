@@ -8,7 +8,7 @@
         @click="addActivity"
         >添加活动</el-button
       >
-      <el-table style="width: 100%" border :data="activityData">
+      <el-table style="width: 100%" border :data="newActivityData">
         <el-table-column
           label="id"
           prop="activityId"
@@ -46,26 +46,33 @@
               title="编辑活动"
               @click="editActivity(row)"
             ></el-button>
-            <el-button
-              type="danger"
-              icon="el-icon-delete"
-              size="mini"
-              title="删除活动"
-            ></el-button>
+            <el-popconfirm
+              @onConfirm="deleteActivity(row)"
+              :title="`确定删除活动${row.activityId}吗？`"
+              style="margin-left: 10px"
+              >
+              <el-button
+                type="danger"
+                icon="el-icon-delete"
+                size="mini"
+                title="删除活动"
+                slot="reference"
+              ></el-button>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
       <el-pagination
-          @current-change="getActivityList"
-          @size-change="handleSizeChange"
-          style="text-align: center"
-          :current-page="page"
-          :page-sizes="[3, 5, 10]"
-          :page-size="limit"
-          layout="prev,pager,next,jumper,->,sizes,total"
-          :total="total"
-        >
-        </el-pagination>
+        @current-change="handlePageChange"
+        @size-change="handleSizeChange"
+        style="text-align: center"
+        :current-page="page"
+        :page-sizes="[3, 5, 10]"
+        :page-size="limit"
+        layout="prev,pager,next,jumper,->,sizes,total"
+        :total="total"
+      >
+      </el-pagination>
     </div>
     <div v-show="scene == 1">
       <el-form ref="form" label-width="120px" :model="activity">
@@ -80,6 +87,8 @@
             v-model="activity.startTime"
             type="date"
             placeholder="选择日期"
+            value-format="yyyy-MM-dd"
+            range-separator="-"
           >
           </el-date-picker>
         </el-form-item>
@@ -115,6 +124,7 @@
             icon="el-icon-plus"
             style="margin-left: 10px"
             @click="addFatherAttr"
+            :disabled="!attrValue"
             >添加父属性</el-button
           >
           <el-table width="100%" border :data="activity.fatherAttrList">
@@ -131,9 +141,13 @@
             ></el-table-column>
             <el-table-column label="子属性名" width="width">
               <template slot-scope="{ row, $index }">
-                <el-select v-model="row.childrenAttrValue" clearable placeholder="请选择">
+                <el-select
+                  v-model="row.childrenAttrValue"
+                  clearable
+                  placeholder="请选择"
+                >
                   <el-option
-                    v-for="(childrenAttr,index) in row.childrenAttrData"
+                    v-for="(childrenAttr, index) in row.childrenAttrData"
                     :key="childrenAttr.id"
                     :label="childrenAttr.value"
                     :value="childrenAttr.id"
@@ -144,51 +158,58 @@
             </el-table-column>
             <el-table-column label="操作" width="width">
               <template slot-scope="{ row, $index }">
-                <el-button icon="el-icon-delete" type="danger" @click="activity.fatherAttrList.splice($index,1)"></el-button>
+                <el-button
+                  icon="el-icon-delete"
+                  type="danger"
+                  @click="activity.fatherAttrList.splice($index, 1)"
+                ></el-button>
               </template>
             </el-table-column>
           </el-table>
         </el-form-item>
         <el-form-item>
-        <el-button type="primary" @click="addOrUpdateAttr">保存</el-button>
-        <el-button @click="cancel">取消</el-button>
-      </el-form-item>
+          <el-button type="primary" @click="addOrUpdateActivity"
+            >保存</el-button
+          >
+          <el-button @click="cancel">取消</el-button>
+        </el-form-item>
       </el-form>
     </div>
   </div>
 </template>
 
 <script>
-import axios from "axios";
+import { mapState } from "vuex";
 export default {
   name: "Scene2",
   data() {
     return {
-      activityData: [],
+      newActivityData: [],
       activity: {
+        activityId: "",
         activityName: "",
         startTime: "",
         location: "",
-        url:"",
+        url: "",
         fatherAttrList: [], //父属性列表
       },
       scene: 0,
       attrValue: "", //收集未选择的属性
-      page:1,//当前页数,
-      total:3,//总数据条数,
-      limit:3,//每页展示数据条数
-      fatherAttrId:"",//父属性id
-      childrenAttrId:""//子属性id
+      page: 1, //当前页数,
+      total: 3, //总数据条数,
+      limit: 3, //每页展示数据条数
+      fatherAttrId: "", //父属性id
+      childrenAttrId: "", //子属性id
     };
   },
-  props: [
-    "fatherAttrData",
-    "levelAttrData",
-    "organizationAttrData",
-    "categoryAttrData",
-  ],
   computed: {
-    
+    ...mapState("specific", ["activityData"]),
+    ...mapState("category", [
+      "fatherAttrData",
+      "organizationAttrData",
+      "levelAttrData",
+      "categoryAttrData",
+    ]),
     unSelectFatherAttr() {
       let result = this.fatherAttrData.filter((item) => {
         return this.activity.fatherAttrList.every((item1) => {
@@ -197,25 +218,23 @@ export default {
       });
       return result;
     },
-    
   },
   methods: {
-    //获取活动数据
-    async getActivityList(page=1){
+    getActivityList(fatherAttrId, childrenAttrId, page) {
+      let data = {
+        fatherAttrId: fatherAttrId,
+        childrenAttrId: childrenAttrId,
+      };
+      this.$store.dispatch("specific/getActivityList", data);
       this.page = page;
-      const { limit,fatherAttrId,childrenAttrId} = this;
-      const result=await this.$API.specific.reqActivityList(fatherAttrId,childrenAttrId,page,limit);
-      if(result.code==200){
-        this.activityData=result.data.activityList;
-        this.total=parseInt(result.data.totalNum);
-      }
+    },
+    handlePageChange(page) {
+      this.page = page;
     },
     //改变每页展示数据条数的回调
-    handleSizeChange(limit){
+    handleSizeChange(limit) {
       //修改参数
       this.limit = limit;
-      //再发请求
-      this.getActivityList();
     },
     toUrl(url) {
       window.location.href = url;
@@ -223,80 +242,178 @@ export default {
     //添加活动按钮回调
     addActivity() {
       this.scene = 1;
-      this.$bus.$emit('changeCsShow',false);
+      this.$bus.$emit("changeCsShow", false);
     },
     //编辑活动按钮回调
     editActivity(row) {
-      this.activity.activityName=row.activityName;
-      this.activity.location=row.location;
-      this.activity.startTime=row.startTime;
-      this.activity.url=row.url;
-      if(row.id){
-        this.activity.fatherAttrList.push({fieldId:"1",fieldValue:"organizationForm",childrenAttrValue:row.id,childrenAttrData:this.organizationAttrData['childrenValue']});
+      this.activity.activityId = row.activityId;
+      this.activity.activityName = row.activityName;
+      this.activity.location = row.location;
+      this.activity.startTime = row.startTime;
+      this.activity.url = row.url;
+      if (row.id != "0") {
+        this.activity.fatherAttrList.push({
+          fieldId: "1",
+          fieldValue: "organizationForm",
+          childrenAttrValue: row.id,
+          childrenAttrData: this.organizationAttrData,
+        });
       }
-      if(row.id1){
-        this.activity.fatherAttrList.push({fieldId:"2",fieldValue:"level",childrenAttrValue:row.id,childrenAttrData:this.levelAttrData['childrenValue']});
+      if (row.id1 != "0") {
+        this.activity.fatherAttrList.push({
+          fieldId: "2",
+          fieldValue: "level",
+          childrenAttrValue: row.id1,
+          childrenAttrData: this.levelAttrData,
+        });
       }
-      if(row.id2){
-        this.activity.fatherAttrList.push({fieldId:"3",fieldValue:"category",childrenAttrValue:row.id,childrenAttrData:this.categoryAttrData['childrenValue']});
+      if (row.id2 != "0") {
+        this.activity.fatherAttrList.push({
+          fieldId: "3",
+          fieldValue: "category",
+          childrenAttrValue: row.id2,
+          childrenAttrData: this.categoryAttrData,
+        });
       }
       this.scene = 1;
-      this.$bus.$emit('changeCsShow',false);
+      this.$bus.$emit("changeCsShow", false);
     },
     addFatherAttr() {
       //分割收集到的父属性数据
       const [fieldId, fieldValue] = this.attrValue.split(":");
-      let childrenAttrData=[];
-      if(fieldId==0){
-        childrenAttrData=this.organizationAttrData['childrenValue'];
+      let childrenAttrData = [];
+      if (fieldId == 1) {
+        childrenAttrData = this.organizationAttrData;
+      } else if (fieldId == 2) {
+        childrenAttrData = this.levelAttrData;
+      } else {
+        childrenAttrData = this.categoryAttrData;
       }
-      else if(fieldId==1){
-        childrenAttrData=this.levelAttrData['childrenValue'];
-      }
-      else{
-        childrenAttrData=this.categoryAttrData['childrenValue'];
-      }
-      let newFatherAttr = { fieldId, fieldValue,childrenAttrData,childrenAttrValue: "" };
+      let newFatherAttr = {
+        fieldId,
+        fieldValue,
+        childrenAttrData,
+        childrenAttrValue: "",
+      };
       //添加新的销售属性
       this.activity.fatherAttrList.push(newFatherAttr);
       //清空数据
       this.attrValue = "";
     },
     //保存按钮的回调
-    addOrUpdateAttr(){
-      this.scene=0;
-      this.$bus.$emit('changeCsShow',true);
+    addOrUpdateActivity() {
+      let result = this.$store.dispatch(
+        "specific/addOrUpdateActivity",
+        this.activity
+      );
+      result
+        .then(() => {
+          this.$message({
+            message: this.activity.activityId ? "修改活动成功" : "添加活动成功",
+            type: "success",
+          });
+          if (this.activity.activityId) {
+            this.getActivityList(
+              this.fatherAttrId,
+              this.childrenAttrId,
+              this.page
+            );
+          } else {
+            this.getActivityList(this.fatherAttrId, this.childrenAttrId, 1);
+          }
+          //清除数据
+          let activity = {
+            activityName: "",
+            startTime: "",
+            location: "",
+            url: "",
+            fatherAttrList: [], //父属性列表
+          };
+          this.activity = activity;
+        })
+        .catch(() => {
+          this.$message({
+            message: this.activity.activityId ? "修改活动失败" : "添加活动失败",
+            type: "error",
+          });
+        });
+      this.scene = 0;
+      this.$bus.$emit("changeCsShow", true);
     },
     //取消按钮的回调
-    cancel(){
-      this.scene=0;
-      this.$bus.$emit('changeCsShow',true);
+    cancel() {
+      this.scene = 0;
+      this.$bus.$emit("changeCsShow", true);
       //清除数据
       let activity = {
         activityName: "",
         startTime: "",
         location: "",
-        url:"",
+        url: "",
         fatherAttrList: [], //父属性列表
       };
-      this.activity=activity;
-    }
+      this.activity = activity;
+    },
+    //删除活动按钮的回调
+    deleteActivity(activity) {
+      let result=this.$store.dispatch('specific/deleteActivity',activity.activityId);
+      result.then(()=>{
+        this.$message({type:'success',message:'删除成功'});
+        if(this.newActivityData.length==1){
+          this.getActivityList(this.fatherAttrId,this.childrenAttrId,this.page-1);
+        }
+        else{
+          this.getActivityList(this.fatherAttrId,this.childrenAttrId,this.page);
+        }
+      }).catch(()=>{
+        this.$message({type:'success',message:'删除失败'});
+      })
+    },
   },
-  mounted(){
-        this.getActivityList();
-        this.$bus.$on("getAttrInfo",(data1,data2)=>{
-          this.fatherAttrId=data1;
-          this.childrenAttrId=data2;
-        });
+  mounted() {
+    this.scene = 0;
+    this.$store.dispatch("category/getLevelAttrData");
+    this.$store.dispatch("category/getCategoryAttrData");
+    this.$store.dispatch("category/getOrganizationAttrData");
+    this.$bus.$on("getAttrInfo", (data1, data2) => {
+      this.fatherAttrId = data1;
+      this.childrenAttrId = data2;
+    });
+  },
+  beforeDestroy() {
+    this.$bus.$off("getAttrInfo");
+  },
+  watch: {
+    childrenAttrId(newValue, oldValue) {
+      this.getActivityList(this.fatherAttrId, this.childrenAttrId, 1);
+    },
+    activityData: {
+      deep: true,
+      handler(newValue, oldValue) {
+        this.total = newValue.length;
+        this.newActivityData = this.activityData.slice(
+          this.limit * (this.page - 1),
+          this.limit * (this.page - 1) + this.limit
+        );
       },
-  beforeDestroy(){
-        this.$bus.$off("getAttrInfo");
- },
- watch:{
-  childrenAttrId(newValue,oldValue){
-    this.getActivityList();
+    },
+    page(newValue, oldValue) {
+      this.newActivityData = this.activityData.slice(
+        this.limit * (this.page - 1),
+        this.limit * (this.page - 1) + this.limit
+      );
+    },
+    limit(newValue, oldValue) {
+      if (this.page == 1) {
+        this.newActivityData = this.activityData.slice(
+          this.limit * (this.page - 1),
+          this.limit * (this.page - 1) + this.limit
+        );
+      } else {
+        this.page = 1;
+      }
+    },
   },
- }
 };
 </script>
 

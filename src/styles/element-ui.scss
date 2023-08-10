@@ -16,7 +16,7 @@
 }
 
 
-// to fixed https://github.com/ElemeFE/element/issues/2461
+// // to fixed https://github.com/ElemeFE/element/issues/2461
 .el-dialog {
   transform: none;
   left: 0;
@@ -24,7 +24,7 @@
   margin: 0 auto;
 }
 
-// refine element ui upload
+refine element ui upload
 .upload-container {
   .el-upload {
     width: 100%;
@@ -46,4 +46,8 @@
 // to fix el-date-picker css style
 .el-range-separator {
   box-sizing: content-box;
+}
+
+.el-collapse-item__content{
+  padding-bottom: 0px;
 }

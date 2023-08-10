@@ -4,7 +4,7 @@ import Router from 'vue-router'
 Vue.use(Router)
 
 /* Layout */
-import Layout from '@/layout'
+// import Layout from '@/layout'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -44,38 +44,14 @@ export const constantRoutes = [
   },
 
   {
-    path: '/',
-    component: Layout,
-    redirect: '/dashboard',
-    children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: '首页', icon: 'dashboard' }
-    }]
+    path: '/Activity',
+    component: ()=>import('@/views/Activity'),
+    name:'Activity'
   },
-
   {
-    path:'/activity',
-    component:Layout,
-    name:'Activity',
-    meta:{title:'活动管理',icon:'el-icon-date'},
-    children:[
-      {
-        path:'category',
-        name:'Category',
-        component:()=>import('@/views/activity/category'),
-        meta:{title:'活动种类管理'},
-      },
-      {
-        path:'specific',
-        name:'Specific',
-        component:()=>import('@/views/activity/specific'),
-        meta:{title:'具体活动管理'},
-      },
-    ]
+    path:'/',
+    redirect:'/Activity',
   },
-
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
@@ -84,7 +60,8 @@ export const constantRoutes = [
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
+  routes: constantRoutes,
+  mode:'history',
 })
 
 const router = createRouter()

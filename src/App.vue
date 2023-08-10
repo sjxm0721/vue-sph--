@@ -7,6 +7,14 @@
 
 <script>
 export default {
-  name: 'App'
-}
+  name: "App",
+};
 </script>
+
+<style>
+#app {
+  background-color: #f0f0f0;
+  height:100%;
+  min-width: 1200px;
+}
+</style>

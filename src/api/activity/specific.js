@@ -2,18 +2,44 @@
 import request from '@/utils/request'
 
 
-export const reqActivityList=(fatherAttrId,childrenAttrId,page,limit)=>{
-    return request({url:`/select_activity.php`,params:{fatherAttrId,childrenAttrId,page,limit},method:'get'});
+export const reqActivityList=(fatherAttrId,childrenAttrId)=>{
+    return request({url:`/select_activity.php`,params:{fatherAttrId,childrenAttrId},method:'get'});
 }
 
 
-export const reqAddOrUpdateChildrenAttr=(children)=>{
-    if(children.childrenAttrForm.id){
-        //修改
-        return request({url:'/change.php',method:'put',data:children});
-    }
-    else{
-        //添加
-        return request({url:'/add1.php',method:'post',data:children});
-    }
+export const reqAddOrUpdateActivity=(activity)=>{
+    return request({url:'/addOrUpdateActivity.php',data:activity,method:'post'});
+}
+
+
+export const reqDeleteActivity=(activityId)=>{
+    return request({url:'/deleteActivity.php',params:{activityId},method:'get'});
+}
+
+export const reqGetTotalActivity=()=>{
+    return request({url:'/getTotalActivity.php',method:'get'});
+}
+
+export const reqChooseTotalActivity=(chooseContent)=>{
+    return request({url:'/chooseTotalActivity.php',method:'post',data:chooseContent});
+}
+
+export const reqGetActivityByLikeNum=()=>{
+    return request({url:'/getActivityByLikeNum.php',method:'get'});
+}
+
+export const reqGetActivityByCollectNum=()=>{
+    return request({url:'/getActivityByCollectNum.php',method:'get'});
+}
+
+export const reqGetUserActivity=(chooseContent)=>{
+    return request({url:'/selectUserActivity.php',method:'post',data:chooseContent});
+}
+
+export const reqClickLike=(activityId)=>{
+    return request({url:'/addLikeNum.php',method:'get',params:{activityId}});
+}
+
+export const reqCollectActivity=(data)=>{
+    return request({url:'/collectActivity.php',method:'post',data});
 }

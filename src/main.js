@@ -40,10 +40,6 @@ Vue.config.productionTip = false
 import API from '@/api'
 //api挂载在vue原型上，任意组件可以使用api相关的接口
 Vue.prototype.$API=API;
-//引入CS组件
-import CategorySelect from '@/components/CategorySelect'
-//注册CS为全局组件
-Vue.component(CategorySelect.name,CategorySelect);
 new Vue({
   el: '#app',
   //全局事件总线

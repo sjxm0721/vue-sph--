@@ -6,6 +6,7 @@ import settings from './modules/settings'
 import user from './modules/user'
 import category from './modules/category'
 import specific from './modules/specific'
+import userAccount from './modules/userAccount'
 
 Vue.use(Vuex)
 
@@ -15,7 +16,8 @@ const store = new Vuex.Store({
     settings,
     user,
     category,
-    specific
+    specific,
+    userAccount,
   },
   getters
 })

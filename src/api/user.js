@@ -6,20 +6,28 @@ import request from '@/utils/request'
 //对外暴露登录接口函数
 export function login(data) {
   return request({
-    url: '/selectPeople.php',
+    url: '/user/login',
     method: 'post',
     data
   })
 }
 
-//对外暴露获取用户信息的函数
-export function getInfo(token) {
+export function tokenLogin(token){
   return request({
-    url: '/info.php',
-    method: 'get',
-    params: { token }
+    url:'/user/tokenLogin',
+    method:'get',
+    params:{token:token}
   })
 }
+
+export function reqEditPassword(passwordMsg){
+  return request({
+    url:'/user/editPassword',
+    method:'put',
+    data:passwordMsg
+  })
+}
+
 
 //对外暴露退出登录的函数
 // export function logout() {

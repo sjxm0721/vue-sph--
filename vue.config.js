@@ -6,7 +6,7 @@ function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
-const name = defaultSettings.title || 'vue Admin Template' // page title
+const name = defaultSettings.title || '黑科技后台' // page title
 
 // If your port is set to 80,
 // use administrator privileges to execute the command line.
@@ -40,9 +40,12 @@ module.exports = {
     // before: require('./mock/mock-server.js')
     //配置代理跨域
     proxy:{
-      '/myPHP':{
-        target:'http://47.99.92.58:80/',
+      '/admin':{
+        target:'http://127.0.0.1:8080/',
         changeOrigin:true,
+        // pathRewrite:{
+        //   '^/admin': ""
+        // }
       },
     }
   },

@@ -4,8 +4,12 @@ import getters from './getters'
 import app from './modules/app'
 import settings from './modules/settings'
 import user from './modules/user'
-import category from './modules/category'
-import specific from './modules/specific'
+import school from './modules/activity/school'
+import account from './modules/activity/account'
+import myClass from './modules/activity/myClass'
+import device from './modules/activity/device'
+import student from './modules/activity/student'
+import result from './modules/activity/result'
 
 Vue.use(Vuex)
 
@@ -14,8 +18,12 @@ const store = new Vuex.Store({
     app,
     settings,
     user,
-    category,
-    specific
+    school,
+    account,
+    myClass,
+    device,
+    student,
+    result
   },
   getters
 })

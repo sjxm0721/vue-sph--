@@ -1,6 +1,9 @@
 <template>
   <div :class="{'has-logo':showLogo}">
     <logo v-if="showLogo" :collapse="isCollapse" />
+    <div class="true-logo">
+      <img src="https://sky-take-out-sjxm.oss-cn-hangzhou.aliyuncs.com/202308222021839.jpg" alt="">
+    </div>
     <el-scrollbar wrap-class="scrollbar-wrapper">
       <el-menu
         :default-active="activeMenu"
@@ -51,6 +54,17 @@ export default {
     isCollapse() {
       return !this.sidebar.opened
     }
-  }
+  },
 }
 </script>
+
+<style>
+  .true-logo{
+    width: 100%;
+    height:100px;
+  }
+  .true-logo img{
+    width: 100%;
+    height: 100%;
+  }
+</style>

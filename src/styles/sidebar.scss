@@ -13,12 +13,16 @@
     background-color: $menuBg;
     height: 100%;
     position: fixed;
-    font-size: 0px;
+    font-size: 10px;
     top: 0;
     bottom: 0;
     left: 0;
     z-index: 1001;
     overflow: hidden;
+
+    .is-active{
+      background-color: #e3e3e3 !important;
+    }
 
     // reset element-ui css
     .horizontal-collapse-transition {
@@ -49,7 +53,9 @@
 
     a {
       display: inline-block;
-      width: 100%;
+      border-radius: 8px;
+      width: 90%;
+      margin: 10px;
       overflow: hidden;
     }
 
@@ -64,20 +70,27 @@
 
     .el-menu {
       border: none;
+      // padding: 15px;
       height: 100%;
       width: 100% !important;
     }
 
     // menu hover
-    .submenu-title-noDropdown,
-    .el-submenu__title {
-      &:hover {
-        background-color: $menuHover !important;
-      }
-    }
+    // .submenu-title-noDropdown,
+    // .el-submenu__title {
+    //   &:hover {
+    //     // background-color: $menuHover !important;
+    //   }
+    // }
+
 
     .is-active>.el-submenu__title {
       color: $subMenuActiveText !important;
+    }
+
+    .el-menu-item{
+      font-size:15px;
+      font-weight: 500;
     }
 
     & .nest-menu .el-submenu>.el-submenu__title,

@@ -33,21 +33,20 @@ router.beforeEach(async(to, from, next) => {
       if (hasGetUserInfo) {
         next()
       } else {
-        try {
-          // get user info
-          await store.dispatch('user/getInfo')
-
-          next()
-        } catch (error) {
-          // remove token and go to login page to re-login
+        try{
+          await store.dispatch('user/tokenLogin',hasToken);
+          next();
+        }catch{
           await store.dispatch('user/resetToken')
-          Message.error(error || 'Has Error')
+          // Message.error(error || 'Has Error')
           next(`/login?redirect=${to.path}`)
           NProgress.done()
         }
+        
       }
     }
-  } else {
+  } 
+  else {
     /* has no token*/
 
     if (whiteList.indexOf(to.path) !== -1) {

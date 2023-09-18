@@ -1,6 +1,10 @@
 <template>
-  <div v-if="!item.hidden">
-    <template v-if="hasOneShowingChild(item.children,item) && (!onlyOneChild.children||onlyOneChild.noShowingChildren)&&!item.alwaysShow">
+  <div v-if="!item.hidden&&(item.meta.auth==1||item.meta.auth==2&&auth==1||item.meta.auth==2&&auth==2||item.meta.auth==3&&auth==1)">
+    <template 
+    v-if="hasOneShowingChild(item.children,item) 
+    && (!onlyOneChild.children||onlyOneChild.noShowingChildren)&&!item.alwaysShow
+    "
+    >
       <app-link v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path)">
         <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{'submenu-title-noDropdown':!isNest}">
           <item :icon="onlyOneChild.meta.icon||(item.meta&&item.meta.icon)" :title="onlyOneChild.meta.title" />
@@ -30,6 +34,7 @@ import { isExternal } from '@/utils/validate'
 import Item from './Item'
 import AppLink from './Link'
 import FixiOSBug from './FixiOSBug'
+import crypto from '@/utils/crypto'
 
 export default {
   name: 'SidebarItem',
@@ -54,7 +59,13 @@ export default {
     // To fix https://github.com/PanJiaChen/vue-admin-template/issues/237
     // TODO: refactor with render function
     this.onlyOneChild = null
-    return {}
+    return {
+      auth:null,
+    }
+  },
+  created(){
+    const savedAuth = crypto.Decrypt(localStorage.getItem('user_auth'));
+    this.auth=savedAuth;
   },
   methods: {
     hasOneShowingChild(children = [], parent) {
